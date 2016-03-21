@@ -5,6 +5,11 @@ var { Class } = require('sdk/core/heritage');
 var xpcom = require('sdk/platform/xpcom');
 
 var geolocation = xpcom.factoryByContract(contractId).getService(Ci.nsISupports);
+
+var id = components.manager.QueryInterface(Ci.nsIComponentRegistrar).
+      contractIDToCID(contractId);
+console.log("ClassID of real '@mozilla.org/geolocation;1' : " + id);
+
 console.log("Got Geolocation service: " + geolocation);
 console.log("clearWatch is: " + geolocation.clearWatch);
 console.log("getCurrentPosition is: " + geolocation.getCurrentPosition);
@@ -18,33 +23,57 @@ var SpoofedGeolocation = Class({
 	extends: xpcom.Unknown,
 	get wrappedJSObject() this,
 	clearWatch: function(watchId) { 
-		console.log("new clearWatch invoked: ["+watchId+"]");
+        return "new clearWatch invoked: ["+watchId+"]";
 	},
 	getCurrentPosition: function(successCallback, errorCallback, options) {
-		console.log("new getCurrentPosition invoked");
+		return "new getCurrentPosition invoked";
 	},
 	watchPosition: function(successCallback, errorCallback, options){
-		console.log("new watchPosition invoked");
-	},
-	log: function(message) {
-		console.log(new Date().getTime() + ' : ' + message);
+		return "new watchPosition invoked";
 	}
 });
 
 // Register the service using the contract ID
 var service = xpcom.Service({
     contract: contractId,
+    interfaces: [Ci.nsIDOMGeoGeolocation],
     register: false,
     Component: SpoofedGeolocation
 });
 
+console.log("(expecting false) Service is registered: " + xpcom.isRegistered(service));
+
+var registered_id = components.manager.QueryInterface(Ci.nsIComponentRegistrar).
+      contractIDToCID(contractId);
+console.log("ClassID of system registered '@mozilla.org/geolocation;1' : " + registered_id);
+
 xpcom.register(service);
 
 console.log("(expecting true) Service is registered: " + xpcom.isRegistered(service));
+console.log("Service class ID: " + service.id);
 
-// Access the service using getService()
+// Access the newly registered service
+
+var new_id = components.manager.QueryInterface(Ci.nsIComponentRegistrar).
+      contractIDToCID(contractId);
+console.log("ClassID of newly registered component '@mozilla.org/geolocation;1' : " + new_id);
+
+var new_geo = xpcom.factoryByContract(contractId).getService(Ci.nsISupports);
+console.log("ClassID of acquired component '@mozilla.org/geolocation;1' : " + new_geo.id);
+
+var alt_new_geo_svc = Cc[contractId].getService(Ci.nsIDOMGeoGeolocation);
+console.log("ClassID of alt acquired component '@mozilla.org/geolocation;1' : " + alt_new_geo_svc.id);
+
 
 /* 
+ *
+var newgeo = xpcom.factoryByContract(contractId).getService(Ci.nsISupports);
+
+console.log("(expecting method here) newgeo: " + newgeo);
+console.log("(expecting method here) clearWatch: " + newgeo.clearWatch);
+ *
+ *
+ *
  Note that this has to use xpcom.factoryByContract
  Components.classes isn't replaced automatically.
 
