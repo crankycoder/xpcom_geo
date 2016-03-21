@@ -14,7 +14,6 @@ console.log("Got Geolocation service: " + geolocation);
 console.log("clearWatch is: " + geolocation.clearWatch);
 console.log("getCurrentPosition is: " + geolocation.getCurrentPosition);
 console.log("watchPosition is: " + geolocation.watchPosition);
-console.log("log method is: " + geolocation.log);
 
 // TODO: implement the XPCOM service here
 
@@ -58,29 +57,10 @@ var new_id = components.manager.QueryInterface(Ci.nsIComponentRegistrar).
       contractIDToCID(contractId);
 console.log("ClassID of newly registered component '@mozilla.org/geolocation;1' : " + new_id);
 
+// Shouldn't this work?  The service is registered.
 var new_geo = xpcom.factoryByContract(contractId).getService(Ci.nsISupports);
 console.log("ClassID of acquired component '@mozilla.org/geolocation;1' : " + new_geo.id);
-
-var alt_new_geo_svc = Cc[contractId].getService(Ci.nsIDOMGeoGeolocation);
-console.log("ClassID of alt acquired component '@mozilla.org/geolocation;1' : " + alt_new_geo_svc.id);
-
-
-/* 
- *
-var newgeo = xpcom.factoryByContract(contractId).getService(Ci.nsISupports);
-
-console.log("(expecting method here) newgeo: " + newgeo);
-console.log("(expecting method here) clearWatch: " + newgeo.clearWatch);
- *
- *
- *
- Note that this has to use xpcom.factoryByContract
- Components.classes isn't replaced automatically.
-
- https://developer.mozilla.org/en-US/Add-ons/SDK/Low-Level_APIs/platform_xpcom#factoryByContract%28contract%29
-
- This function is similar to the standard
- Components.classes[contractID] with one significant difference: that
- Components.classes is not updated at runtime.
-*/
-
+console.log("Got new_geo service: " + new_geo);
+console.log("clearWatch is: " + new_geo.clearWatch);
+console.log("getCurrentPosition is: " + new_geo.getCurrentPosition);
+console.log("watchPosition is: " + new_geo.watchPosition);
