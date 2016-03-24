@@ -1,0 +1,45 @@
+diff --git a/dom/interfaces/geolocation/nsIDOMGeoGeolocation.idl b/dom/interfaces/geolocation/nsIDOMGeoGeolocation.idl
+--- a/dom/interfaces/geolocation/nsIDOMGeoGeolocation.idl
++++ b/dom/interfaces/geolocation/nsIDOMGeoGeolocation.idl
+@@ -12,17 +12,17 @@ namespace mozilla {
+ namespace dom {
+ struct PositionOptions;
+ }
+ }
+ %}
+ 
+ [ptr] native NamespacedPositionOptions(mozilla::dom::PositionOptions);
+ 
+-[builtinclass, uuid(9142ab45-0ab5-418c-9bab-338a6d271d4f)]
++[scriptable, uuid(e69e2bd8-3aad-43fa-b951-ad1f59b2ee74)]
+ interface nsIDOMGeoGeolocation : nsISupports
+ {
+   int32_t watchPosition(in nsIDOMGeoPositionCallback callback,
+                         in nsIDOMGeoPositionErrorCallback errorCallback,
+                         in NamespacedPositionOptions options);
+   void getCurrentPosition(in nsIDOMGeoPositionCallback callback,
+                           in nsIDOMGeoPositionErrorCallback errorCallback,
+                           in NamespacedPositionOptions options);
+diff --git a/dom/webidl/Geolocation.webidl b/dom/webidl/Geolocation.webidl
+--- a/dom/webidl/Geolocation.webidl
++++ b/dom/webidl/Geolocation.webidl
+@@ -11,17 +11,18 @@
+  */
+ 
+ dictionary PositionOptions {
+   boolean enableHighAccuracy = false;
+   long timeout = 0x7fffffff;
+   long maximumAge = 0;
+ };
+ 
+-[NoInterfaceObject]
++/* [NoInterfaceObject] */
++
+ interface Geolocation {
+   [Throws]
+   void getCurrentPosition(PositionCallback successCallback,
+                           optional PositionErrorCallback? errorCallback = null,
+                           optional PositionOptions options);
+ 
+   [Throws]
+   long watchPosition(PositionCallback successCallback,
